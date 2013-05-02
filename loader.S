@@ -3,7 +3,7 @@
 .text
 .org 0x0                   # Passing -Ttext 0x7c00 to ld
 
-.global main
+.global _start
 
 _start:
 
