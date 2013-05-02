@@ -14,7 +14,8 @@ main:
 
 data:
 
-   iOEM:   .asciz "WeeeeeOS"
+   iOEM:          .asciz  "WeeeeeOS"    # name of the OS
+   iBootDrive:    .byte   0             # drive the boot sector came from
 
 ################################################################################
 
@@ -40,14 +41,43 @@ printStr_done:
 
 ################################################################################
 
+rebootmsg:  .asciz  "Press any key to reboot\r\n"
+
+.func reboot
+
+reboot:
+
+   lea    si, rebootmsg
+   call   printStr
+   xor    ax, ax           # subfuction 0
+   int    0x16             # call bios to wait for key
+
+   # nifty little trick
+   .byte  0xEA             # machine language to jump to FFFF:0000 (reboot)
+   .word  0x0000
+   .word  0xFFFF
+
+.endfunc
+
+################################################################################
+
 start:
 
    # Print the name of the OS
    lea si, iOEM
    call printStr
 
-   # disable interrupts and halt the CPU
+   # Initialize segment registers
    cli
+   mov  iBootDrive, dl  # save what drive we booted from (should be 0x0)
+   mov  ax, cs          # CS = 0x0, since that's where boot sector is (0x07c00)
+   mov  ds, ax          # DS = CS = 0x0
+   mov  es, ax          # ES = CS = 0x0
+   mov  ss, ax          # SS = CS = 0x0
+   mov  sp, 0x7c00      # Stack grows down from offset 0x7C00 toward 0x0000.
+   sti
+
+   # halt the CPU
    hlt
 
 ################################################################################
