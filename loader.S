@@ -3,11 +3,11 @@
 .text
 .org 0x0                   # Passing -Ttext 0x7c00 to ld
 
-.global _start
+.global main
 
-_start:
+main:
 
-   jmp short main
+   jmp short start
    nop
 
 ################################################################################
@@ -40,7 +40,7 @@ printStr_done:
 
 ################################################################################
 
-main:
+start:
 
    # Print the name of the OS
    lea si, iOEM
