@@ -5,9 +5,9 @@
 
 .global main
 
-main:
+_start:
 
-   jmp short _start
+   jmp short main
    nop
 
 ################################################################################
@@ -40,7 +40,7 @@ printStr_done:
 
 ################################################################################
 
-_start:
+main:
 
    # Print the name of the OS
    lea si, iOEM
