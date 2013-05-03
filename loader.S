@@ -58,6 +58,30 @@ reboot:
 
 ################################################################################
 
+diskResetFailureMsg: .asciz "Danger, Will Robinson: Failed to init floppy drive!"
+
+.func resetFloppy
+
+resetFloppy:
+
+   mov  dl, iBootDrive     # drive to reset
+   xor  ax, ax             # subfunction 0
+   int  0x13               # call interrupt 13h
+   jc   diskResetFailure   # display error message if carry set (error)
+
+   retw
+
+diskResetFailure:
+
+   # let the user know there was a floppy error and halt the CPU
+   lea si, diskResetFailureMsg
+   call printStr
+   hlt
+
+.endfunc
+
+################################################################################
+
 start:
 
    # Print the name of the OS
@@ -73,6 +97,9 @@ start:
    mov  ss, ax          # SS = CS = 0x0
    mov  sp, 0x7c00      # Stack grows down from offset 0x7C00 toward 0x0000.
    sti
+
+   # init the floppy disk drive
+   call resetFloppy
 
    # we don't actually do anything yet...
    call reboot
