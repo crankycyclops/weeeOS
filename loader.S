@@ -41,7 +41,7 @@ printStr_done:
 
 ################################################################################
 
-rebootmsg:  .asciz  "Press any key to reboot\r\n"
+rebootmsg:  .asciz  "\nPress any key to reboot\r\n"
 
 .func reboot
 
@@ -52,10 +52,7 @@ reboot:
    xor    ax, ax           # subfuction 0
    int    0x16             # call bios to wait for key
 
-   # nifty little trick
-   .byte  0xEA             # machine language to jump to FFFF:0000 (reboot)
-   .word  0x0000
-   .word  0xFFFF
+   ljmp   0xffff:0x0000    #reboot
 
 .endfunc
 
@@ -77,8 +74,8 @@ start:
    mov  sp, 0x7c00      # Stack grows down from offset 0x7C00 toward 0x0000.
    sti
 
-   # halt the CPU
-   hlt
+   # we don't actually do anything yet...
+   call reboot
 
 ################################################################################
 
